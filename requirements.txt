@@ -1,0 +1,5 @@
+Flask==0.8
+BeautifulSoup==3.2.0
+requests==0.10.1
+mock==0.7.2
+tweepy==1.8
