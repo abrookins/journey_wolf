@@ -54,19 +54,24 @@ def get_latest_cfg_update():
 
 def retweet():
     """ Retweet some recent tweets about OR-7/Journey Wolf. """
+    search_string = os.environ.get('SEARCH_STRING')
     retweet_limit = int(os.environ.get('RETWEET_LIMIT'))
     api = get_twitter_api()
+    user = api.me()
     home_tweets = [t.text for t in api.home_timeline()]
-    tweets_about_journey = api.search('Journey Wolf')
+    tweets_about_journey = api.search(search_string)
     to_retweet = []
 
     # Exclude retweets from the list of potential candidates.
-    possible_rts = [t for t in tweets_about_journey
+    candidates = [t for t in tweets_about_journey
                     if not t.text.startswith('RT ')]
 
     # Exclude tweets we've already retweeted.
-    candidates = [t for t in possible_rts
+    candidates = [t for t in candidates
                   if 'RT %s' % t.text not in home_tweets]
+
+    # Exclude we tweeted.
+    candidates = [t for t in candidates if t.from_user_id != user.id]
 
     if len(candidates) == 1:
         to_retweet = candidates
