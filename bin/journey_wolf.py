@@ -54,7 +54,7 @@ def get_latest_cfg_update():
 
 def retweet():
     """ Retweet some recent tweets about OR-7/Journey Wolf. """
-    retweet_limit = os.environ.get('RETWEET_LIMIT')
+    retweet_limit = int(os.environ.get('RETWEET_LIMIT'))
     api = get_twitter_api()
     home_tweets = [t.text for t in api.home_timeline()]
     tweets_about_journey = api.search('Journey Wolf')
@@ -76,6 +76,7 @@ def retweet():
 
     for t in to_retweet:
         api.retweet(t.id)
+        print "Retweeted: %s" % t.text
 
 
 def update_status():
@@ -94,8 +95,11 @@ def update_status():
     if latest_title not in possible_duplicates:
         new_tweet = u'%s %s' % (latest_title, latest_link)
         api.update_status(new_tweet)
+        print "Tweeted: %s" % new_tweet
 
 
 if __name__ == "__main__":
+    print "Running..."
     update_status()
     retweet()
+    print "Done!"
