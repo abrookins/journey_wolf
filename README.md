@@ -1,10 +1,10 @@
-# Journey, AKA Gray Wolf OR-7
+# Journey Wolf
 This is a Twitter bot that reposts California Department of Fish and Game
-updates on the GPS location of the gray wolf named "Journey", AKA OR-7.
+updates on the GPS location of Gray Wolf OR-7, AKA "Journey.""
 
 ## About Journey
-Wolf OR-7, nicknamed "Journey," is a badass. He has traveled on foot more than
-2,000 miles [(source)](http://www.latimes.com/news/local/la-me-wolf-california-20120303,0,6719205.story)
+Journey is a badass. He has traveled on foot more than 2,000 miles
+[(source)](http://www.latimes.com/news/local/la-me-wolf-california-20120303,0,6719205.story)
 and was the first wild wolf in California since humans nearly wiped out wolves in
 the early 1900s.
 
