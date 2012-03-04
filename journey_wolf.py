@@ -10,6 +10,7 @@ Copyright (c) 2012 Andrew Brookins. All Rights Reserved.
 import os
 import requests
 import random
+import sys
 import tweepy
 
 from BeautifulSoup import BeautifulSoup
@@ -46,9 +47,11 @@ def get_latest_cfg_update():
 
     # This is an <h2> with an embedded link.
     latest_update = items[0].first() 
+
     # Get the content of the href.
     link = latest_update.find('a').attrs[0][1]
     title = latest_update.text
+
     return title, link
 
 
@@ -70,7 +73,7 @@ def retweet():
     candidates = [t for t in candidates
                   if 'RT %s' % t.text not in home_tweets]
 
-    # Exclude we tweeted.
+    # Exclude tweets we tweeted.
     candidates = [t for t in candidates if t.from_user_id != user.id]
 
     if len(candidates) == 1:
@@ -80,8 +83,11 @@ def retweet():
         to_retweet = candidates[:retweet_limit]
 
     for t in to_retweet:
-        api.retweet(t.id)
-        print "Retweeted: %s" % t.text
+        try:
+            api.retweet(t.id)
+        except tweepy.error.TweepError as e:
+            print("Error, skipping retweet: %s" % e, file=sys.stderr)
+        print("Retweeted: %s" % t.text)
 
 
 def update_status():
@@ -100,11 +106,11 @@ def update_status():
     if latest_title not in possible_duplicates:
         new_tweet = u'%s %s' % (latest_title, latest_link)
         api.update_status(new_tweet)
-        print "Tweeted: %s" % new_tweet
+        print("Tweeted: %s" % new_tweet)
 
 
 if __name__ == "__main__":
-    print "Running..."
+    print("Running...")
     update_status()
     retweet()
-    print "Done!"
+    print("Done!")
