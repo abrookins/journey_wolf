@@ -4,12 +4,11 @@ updates on the GPS location of the gray wolf named "Journey", AKA OR-7.
 
 ## About Journey
 Wolf OR-7, nicknamed "Journey," is a badass. He has traveled on foot more than
-2,000 miles [source](http://www.latimes.com/news/local/la-me-wolf-california-20120303,0,6719205.story)
+2,000 miles [(source)](http://www.latimes.com/news/local/la-me-wolf-california-20120303,0,6719205.story)
 and was the first wild wolf in California since humans nearly wiped out wolves in
 the early 1900s.
 
-For more information on Journey, read his web page:
-(http://www.dfg.ca.gov/wildlife/nongame/wolf/OR7story.html)
+For more information on Journey, read [his web page](http://www.dfg.ca.gov/wildlife/nongame/wolf/OR7story.html).
 
 ## About this script
 This is a Python script deployed on Heroku that runs once a day using Heroku's
