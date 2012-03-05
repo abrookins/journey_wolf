@@ -63,31 +63,27 @@ def retweet():
     user = api.me()
     home_tweets = [t.text for t in api.home_timeline()]
     tweets_about_journey = api.search(search_string)
-    to_retweet = []
 
-    # Exclude retweets from the list of potential candidates.
-    candidates = [t for t in tweets_about_journey
-                    if not t.text.startswith('RT ')]
+    random.shuffle(tweets_about_journey)
+    num_tweeted = 0
 
-    # Exclude tweets we've already retweeted.
-    candidates = [t for t in candidates
-                  if 'RT %s' % t.text not in home_tweets]
+    for tweet in tweets_about_journey:
+        # Exclude retweets, tweets we've already retweeted and our own tweets
+        if tweet.text.startswith('RT ') \
+                or 'RT @%s: %s' % (tweet.from_user, tweet.text) in home_tweets \
+                or tweet.from_user_id == user.id:
+            continue
 
-    # Exclude tweets we tweeted.
-    candidates = [t for t in candidates if t.from_user_id != user.id]
-
-    if len(candidates) == 1:
-        to_retweet = candidates
-    elif len(candidates) >= retweet_limit:
-        random.shuffle(candidates)
-        to_retweet = candidates[:retweet_limit]
-
-    for t in to_retweet:
         try:
-            api.retweet(t.id)
+            api.retweet(tweet.id)
+            num_tweeted += 1
         except tweepy.error.TweepError as e:
-            print("Error, skipping retweet: %s" % e, file=sys.stderr)
-        print("Retweeted: %s" % t.text)
+            print >> sys.stderr, "Error, skipping retweet: %s" % e
+
+        print "Retweeted: %s" % tweet.text
+
+        if num_tweeted == retweet_limit:
+            return
 
 
 def update_status():
@@ -99,18 +95,23 @@ def update_status():
     latest_title, latest_link = get_latest_cfg_update()
     api = get_twitter_api()
 
-    # Ignore a status that we've already tweeted.
+    # Ignore any status that we've already tweeted.
     possible_duplicates = [t.text[:len(latest_title)]
                            for t in api.home_timeline()]
 
     if latest_title not in possible_duplicates:
         new_tweet = u'%s %s' % (latest_title, latest_link)
-        api.update_status(new_tweet)
-        print("Tweeted: %s" % new_tweet)
+
+        try:
+            api.update_status()
+        except tweepy.error.TweepError as e:
+            print >> sys.stderr, "Error, could not tweet: %s" % e
+
+        print "Tweeted: %s" % new_tweet
 
 
 if __name__ == "__main__":
-    print("Running...")
+    print "Running..."
     update_status()
     retweet()
-    print("Done!")
+    print "Done!"
