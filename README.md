@@ -1,6 +1,6 @@
 # Journey Wolf
 This is a Twitter bot that reposts California Department of Fish and Game
-updates on the GPS location of Gray Wolf OR-7, AKA "Journey.""
+updates on the GPS location of Gray Wolf OR-7, AKA "Journey."
 
 ## About Journey
 Journey is a badass. He has traveled on foot more than 2,000 miles
