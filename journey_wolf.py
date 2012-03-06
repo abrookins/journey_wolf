@@ -1,6 +1,6 @@
 """
 journey_wolf: A script that updates Twitter with the current location of
-Journey Wolf, AKA OR-7.
+Journey, AKA Gray Wolf OR-7.
 
 Copyright (c) 2012 Andrew Brookins. All Rights Reserved.
 """
@@ -37,8 +37,8 @@ def get_soup(url):
 
 def get_latest_cfg_update():
     """
-    Get the latest Journey Wolf status update from the California Department of
-    Fish and Game's web site.
+    Get the latest update on Journey's location from the California Department
+    of Fish and Game's web site.
     """
     # The California Department of Fish and Game's OR-7 status page.
     cali_fish_and_game_status_page = os.environ.get('FISH_AND_GAME_STATUS_PAGE')
@@ -56,7 +56,7 @@ def get_latest_cfg_update():
 
 
 def retweet():
-    """ Retweet some recent tweets about OR-7/Journey Wolf. """
+    """ Retweet some recent tweets about OR-7/Journey. """
     search_string = os.environ.get('SEARCH_STRING')
     retweet_limit = int(os.environ.get('RETWEET_LIMIT'))
     api = get_twitter_api()
@@ -68,6 +68,9 @@ def retweet():
     num_tweeted = 0
 
     for tweet in tweets_about_journey:
+        if num_tweeted == retweet_limit:
+            return
+
         # Exclude retweets, tweets we've already retweeted and our own tweets
         if tweet.text.startswith('RT ') \
                 or 'RT @%s: %s' % (tweet.from_user, tweet.text) in home_tweets \
@@ -77,13 +80,9 @@ def retweet():
         try:
             api.retweet(tweet.id)
             num_tweeted += 1
+            print "Retweeted: %s" % tweet.text
         except tweepy.error.TweepError as e:
             print >> sys.stderr, "Error, skipping retweet: %s" % e
-
-        print "Retweeted: %s" % tweet.text
-
-        if num_tweeted == retweet_limit:
-            return
 
 
 def update_status():
@@ -95,23 +94,24 @@ def update_status():
     latest_title, latest_link = get_latest_cfg_update()
     api = get_twitter_api()
 
-    # Ignore any status that we've already tweeted.
+    # Ignore any status that we've already tweeted. We're only interested in the
+    # text portion of the tweet -- not the link we include.
     possible_duplicates = [t.text[:len(latest_title)]
-                           for t in api.home_timeline()]
+                           for t in api.home_timeline()
+                           if t.text.startswith(latest_title)]
 
     if latest_title not in possible_duplicates:
         new_tweet = u'%s %s' % (latest_title, latest_link)
 
         try:
-            api.update_status()
+            api.update_status(latest_title)
+            print "Tweeted: %s" % new_tweet
         except tweepy.error.TweepError as e:
             print >> sys.stderr, "Error, could not tweet: %s" % e
-
-        print "Tweeted: %s" % new_tweet
 
 
 if __name__ == "__main__":
     print "Running..."
-    update_status()
     retweet()
+    update_status()
     print "Done!"
